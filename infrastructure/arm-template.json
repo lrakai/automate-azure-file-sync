@@ -10,6 +10,14 @@
             "type": "string",
             "defaultValue": "calabsync"
         },
+        "cloudShellStorageAccount": {
+            "type": "string",
+            "defaultValue": "cacloudshell"
+        },
+        "cloudShellStorageAccountType": {
+            "type": "string",
+            "defaultValue": "Standard_LRS"
+        },
         "networkInterfaceName": {
             "type": "string",
             "defaultValue": "lab-ni"
@@ -140,7 +148,8 @@
         "storageAccountName": "[replace(concat(parameters('storageAccountName'), resourceGroup().name),'-', '')]",
         "nsgId": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName'))]",
         "vnetId": "[resourceId(resourceGroup().name,'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
-        "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]"
+        "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
+        "cloudShellStorageAccountName": "[toLower(replace(concat(parameters('cloudShellStorageAccount'), resourceGroup().name),'-', ''))]"
     },
     "resources": [
         {
@@ -155,6 +164,15 @@
             },
             "tags": {
                 "Environment": "Dev"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "[variables('cloudShellStorageAccountName')]",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "accountType": "[parameters('cloudShellStorageAccountType')]"
             }
         },
         {
