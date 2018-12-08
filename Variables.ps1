@@ -1,5 +1,5 @@
 $Lab="auto-afs"
-$Region="WestUS2"
+$Region="WestUS"
 $User="student-lab-01@labscloudacademy.onmicrosoft.com"
 $Pass="labAccount1"
 $PolicyDefinitionName="lab-policy"
