@@ -10,7 +10,9 @@ function New-LabUser {
 }
 
 function Get-LabPolicyComponents {
-    $file = ".\infrastructure\policy.json"
+    param (
+        $file
+    ) 
     $text = [IO.File]::ReadAllText($file)
     $parser = New-Object Web.Script.Serialization.JavaScriptSerializer
     $parser.MaxJsonLength = $text.length
