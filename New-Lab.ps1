@@ -1,10 +1,9 @@
 . .\Variables.ps1
 . .\Helpers.ps1
 
-# Create Lab resource group and deployment
+# Create Lab resource group
 Connect-AzureRmAccount
 New-AzureRmResourceGroup -Name $Lab -Location $Region
-New-AzureRmResourceGroupDeployment -Name lab-resources -ResourceGroupName $Lab -TemplateFile .\infrastructure\arm-template.json
 
 # Create Lab User, Role, and Policy applied to the Lab resource group
 $PolicyComponents = Get-LabPolicyComponents .\infrastructure\policy.json
@@ -28,3 +27,6 @@ $Assignment = New-AzureRmPolicyAssignment -Name $PolicyAssignmentName -DisplayNa
                 -Scope $ResourceGroupScope.ResourceId `
                 -PolicyDefinition $Definition `
                 -PolicyParameter $PolicyComponents['Values']
+
+# Deploy the ARM template
+New-AzureRmResourceGroupDeployment -Name lab-resources -ResourceGroupName $Lab -TemplateFile .\infrastructure\arm-template.json
