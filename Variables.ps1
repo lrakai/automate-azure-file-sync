@@ -1,4 +1,4 @@
-$Lab="auto-file-sync-lab"
+$Lab="auto-afs"
 $Region="WestUS2"
 $User="student-lab-01@labscloudacademy.onmicrosoft.com"
 $Pass="labAccount1"
