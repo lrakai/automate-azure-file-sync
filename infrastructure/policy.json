@@ -122,7 +122,10 @@
     "parameters_values": {
         "allowedLocations": {
             "value": [
-                "{RGLocation}"
+                "{RGLocation}",
+                "WestUS",
+                "WestUS2",
+                "SouthCentralUS"
             ]
         },
         "allowedServices": {
