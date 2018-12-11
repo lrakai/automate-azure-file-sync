@@ -3,10 +3,15 @@ function Login-Azure {
         [string]$username,
         [string]$password # Use [secureString] outside of secure environments
     )
+    # Convert password to secure string (required for creating login credential)
+    $securePassword = ConvertTo-SecureString -String $password -AsPlainText -Force
 
-
-    # Login non-interactively
-    $acctInfo = Login-AzureRmAccount
+    # Create login cretential with username and password
+    $credential = New-Object -typename System.Management.Automation.PSCredential `
+        -argumentlist $username, $securePassword
+    
+    # Login non-interactively using the credential
+    $acctInfo = Login-AzureRmAccount -Credential $credential
     return $acctInfo
 }
 
@@ -73,7 +78,7 @@ function New-SyncGroup {
 
 $resourceGroupName = Get-AzResourceGroup | Select-Object -ExpandProperty ResourceGroupName
 $storageAccountName = Get-AzStorageAccount -ResourceGroupName $resourceGroupName | `
-                          Where-Object StorageAccountName -like calabsync*
+    Where-Object StorageAccountName -like calabsync*
 $fileShareName = "sync"
 $storageSyncName = "sync"
 $syncGroupName = "dev"
