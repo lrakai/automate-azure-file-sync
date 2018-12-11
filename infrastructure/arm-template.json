@@ -43,17 +43,17 @@
                     }
                 },
                 {
-                  "name": "HTTPS",
-                  "properties": {
-                    "priority": 310,
-                    "protocol": "TCP",
-                    "access": "Allow",
-                    "direction": "Outbound",
-                    "sourceAddressPrefix": "*",
-                    "sourcePortRange": "*",
-                    "destinationAddressPrefix": "*",
-                    "destinationPortRange": "443"
-                  }
+                    "name": "HTTPS",
+                    "properties": {
+                        "priority": 310,
+                        "protocol": "TCP",
+                        "access": "Allow",
+                        "direction": "Outbound",
+                        "sourceAddressPrefix": "*",
+                        "sourcePortRange": "*",
+                        "destinationAddressPrefix": "*",
+                        "destinationPortRange": "443"
+                    }
                 }
             ]
         },
@@ -290,6 +290,12 @@
             "properties": {
                 "hardwareProfile": {
                     "vmSize": "[parameters('virtualMachineSize')]"
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true,
+                        "storageUri": "[concat('https://', variables('cloudShellStorageAccountName'), '.blob.core.windows.net')]"
+                    }
                 },
                 "storageProfile": {
                     "osDisk": {
