@@ -53,6 +53,21 @@ function Register-StorageSyncServer {
     New-AzureRmStorageSyncService -StorageSyncServiceName $storageSyncName
 }
 
+function New-SyncGroup {
+    param (
+        [string]$storageAccountName,
+        [string]$fileShareName
+    )
+    # Get the storage account with desired name
+    $storageAccount = Get-AzureRmStorageAccount -ResourceGroupName $resourceGroup -Name $storageAccountName
+    
+    # Create the cloud endpoint
+    New-AzureRmStorageSyncCloudEndpoint `
+        -StorageSyncServiceName $storageSyncName `
+        -SyncGroupName $syncGroupName `
+        -StorageAccountResourceId $storageAccount.Id `
+        -StorageAccountShareName $fileShareName
+}
 
 $resourceGroupName = Get-AzResourceGroup | Select-Object -ExpandProperty ResourceGroupName
 $storageAccountName = Get-AzStorageAccount -ResourceGroupName $resourceGroupName | `
@@ -62,3 +77,4 @@ $storageSyncName = "sync"
 $acctInfo = Login-Azure
 New-StorageSyncService $acctInfo $storageSyncName $resourceGroupName
 Register-StorageSyncServer $storageSyncName
+New-SyncGroup
