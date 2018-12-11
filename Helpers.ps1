@@ -5,7 +5,7 @@ function New-LabUser {
     $PasswordProfile = New-Object -TypeName Microsoft.Open.AzureAD.Model.PasswordProfile
     $PasswordProfile.Password = $Password
     $PasswordProfile.EnforceChangePasswordPolicy = $false
-    $PasswordProfile.ForceChangePasswordNextLogin = $false
+    $PasswordProfile.ForceChangePasswordNextLogin = $true
     New-AzureADUser -DisplayName $User.Split('@')[0] -PasswordProfile $PasswordProfile -UserPrincipalName $User -AccountEnabled $true -MailNickName "Labuser"
 }
 
