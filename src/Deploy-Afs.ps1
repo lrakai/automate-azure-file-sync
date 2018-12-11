@@ -45,17 +45,20 @@ function New-StorageSyncService {
     New-AzureRmStorageSyncService -StorageSyncServiceName $storageSyncName
 }
 
-function Register-ServerEndpoint {
+function Register-StorageSyncServer {
     param (
         [string]$storageSyncName
     )
+    # Register the server executing the script as a server endpoint
     New-AzureRmStorageSyncService -StorageSyncServiceName $storageSyncName
 }
 
 
-$resourceGroupName = "cal-###"
+$resourceGroupName = Get-AzResourceGroup | Select-Object -ExpandProperty ResourceGroupName
+$storageAccountName = Get-AzStorageAccount -ResourceGroupName $resourceGroupName | `
+                          Where-Object StorageAccountName -like calabsync*
 $storageSyncName = "sync"
 
 $acctInfo = Login-Azure
 New-StorageSyncService $acctInfo $storageSyncName $resourceGroupName
-Register-ServerEndpoint $storageSyncName
+Register-StorageSyncServer $storageSyncName
