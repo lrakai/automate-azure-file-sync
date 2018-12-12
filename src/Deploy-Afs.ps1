@@ -117,11 +117,11 @@ function New-ServerEndpoint {
 # Login to Azure
 $username = "student-lab-01@labscloudacademy.onmicrosoft.com"
 $password = "1labAccount"
-$acctInfo = Login-Azure
+$acctInfo = Login-Azure $username $password
 
 # Set variables
-$resourceGroupName = Get-AzResourceGroup | Select-Object -ExpandProperty ResourceGroupName
-$storageAccountName = Get-AzStorageAccount -ResourceGroupName $resourceGroupName | `
+$resourceGroupName = Get-AzureRmResourceGroup | Select-Object -ExpandProperty ResourceGroupName
+$storageAccountName = Get-AzureRmStorageAccount -ResourceGroupName $resourceGroupName | `
     Where-Object StorageAccountName -like calabsync* | `
     Select-Object -ExpandProperty Name
 $fileShareName = "sync"
