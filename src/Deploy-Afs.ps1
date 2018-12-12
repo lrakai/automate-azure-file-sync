@@ -40,7 +40,7 @@ function New-StorageSyncService {
     # it enables subsequent AFS cmdlets to be executed with minimal 
     # repetition of parameters or separate authentication 
     Login-AzureRmStorageSync `
-        –SubscriptionId $subID `
+        -SubscriptionId $subID `
         -ResourceGroupName $resourceGroupName `
         -TenantId $tenantID `
         -Location $location
