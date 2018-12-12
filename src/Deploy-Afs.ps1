@@ -123,7 +123,7 @@ $acctInfo = Login-Azure $username $password
 $resourceGroupName = Get-AzureRmResourceGroup | Select-Object -ExpandProperty ResourceGroupName
 $storageAccountName = Get-AzureRmStorageAccount -ResourceGroupName $resourceGroupName | `
     Where-Object StorageAccountName -like calabsync* | `
-    Select-Object -ExpandProperty Name
+    Select-Object -ExpandProperty StorageAccountName
 $fileShareName = "sync"
 $storageSyncName = "sync"
 $syncGroupName = "dev"
