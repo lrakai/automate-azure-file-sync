@@ -114,6 +114,12 @@ function New-ServerEndpoint {
 }
 
 
+# Login to Azure
+$username = "student-lab-01@labscloudacademy.onmicrosoft.com"
+$password = "1labAccount"
+$acctInfo = Login-Azure
+
+# Set variables
 $resourceGroupName = Get-AzResourceGroup | Select-Object -ExpandProperty ResourceGroupName
 $storageAccountName = Get-AzStorageAccount -ResourceGroupName $resourceGroupName | `
     Where-Object StorageAccountName -like calabsync* | `
@@ -125,7 +131,6 @@ $serverEndpointPath = "D:\dev"
 $cloudTieringDesired = $true
 $volumeFreeSpacePercentage = 50
 
-$acctInfo = Login-Azure
 New-StorageSyncService $acctInfo $storageSyncName $resourceGroupName
 $registeredServer = Register-StorageSyncServer $storageSyncName
 New-SyncGroup $storageSyncName $syncGroupName $storageAccountName $fileShareName
