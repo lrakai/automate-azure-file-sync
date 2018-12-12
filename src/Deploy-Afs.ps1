@@ -76,6 +76,44 @@ function New-SyncGroup {
         -StorageAccountShareName $fileShareName
 }
 
+function New-ServerEndpoint {
+    param (
+
+    )
+    $serverEndpointPath = "<your-server-endpoint-path>"
+    $cloudTieringDesired = $true
+    $volumeFreeSpacePercentage = <your-volume-free-space>
+
+    # Prepare a settings hashtable for splatting
+    Settings = @{
+        StorageSyncServiceName = $storageSyncName
+        SyncGroupName = $syncGroupName 
+        ServerId = $registeredServer.Id
+        ServerLocalPath = $serverEndpointPath 
+    }
+
+    # Add additional settings if cloud tiering is desired
+    if ($cloudTieringDesired) {
+        # Ensure endpoint path is not the system volume
+        $directoryRoot = [System.IO.Directory]::GetDirectoryRoot($serverEndpointPath)
+        $osVolume = "$($env:SystemDrive)\"
+        if ($directoryRoot -eq $osVolume) {
+            throw [System.Exception]::new("Cloud tiering cannot be enabled on the system volume")
+        }
+
+        # Create server endpoint
+        `
+            -StorageSyncServiceName $storageSyncName `
+            -SyncGroupName $syncGroupName `
+            -ServerId $registeredServer.Id `
+            -ServerLocalPath $serverEndpointPath `
+            -CloudTiering $true `
+            -VolumeFreeSpacePercent $volumeFreeSpacePercentage
+    }
+    New-AzureRmStorageSyncServerEndpoint @Settings
+}
+
+
 $resourceGroupName = Get-AzResourceGroup | Select-Object -ExpandProperty ResourceGroupName
 $storageAccountName = Get-AzStorageAccount -ResourceGroupName $resourceGroupName | `
     Where-Object StorageAccountName -like calabsync*
