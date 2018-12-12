@@ -12,13 +12,13 @@ function Login-Azure {
     
     # Login non-interactively using the credential
     $acctInfo = Login-AzureRmAccount -Credential $credential
-    return $acctInfo
+    return $credential, $acctInfo
 }
 
-function New-StorageSyncService {
+function Login-StorageSync {
     param (
+        $credential,
         $acctInfo,
-        [string]$storageSyncName,
         [string]$resourceGroupName
     )
     # The location of the Azure File Sync Agent
@@ -36,26 +36,31 @@ function New-StorageSyncService {
     $resourceGroup = Get-AzureRmResourceGroup -Name $resourceGroupName
     $location = $resourceGroup.Location
 
-    # The following command creates an AFS context 
+    # The following (non-interactive) login creates an AFS context 
     # it enables subsequent AFS cmdlets to be executed with minimal 
     # repetition of parameters or separate authentication 
     Login-AzureRmStorageSync `
         -SubscriptionId $subID `
         -ResourceGroupName $resourceGroupName `
         -TenantId $tenantID `
-        -Location $location
+        -Location $location `
+        -Credential $credential
+}
 
+function New-StorageSyncService {
+    param (
+        [string]$storageSyncName
+    )
     # Create a new Storage Sync Service in the
     # Login-AzureRmStorageSync context
     New-AzureRmStorageSyncService -StorageSyncServiceName $storageSyncName
 }
-
 function Register-StorageSyncServer {
     param (
         [string]$storageSyncName
     )
     # Register the server executing the script as a server endpoint
-    $registeredServer = New-AzureRmStorageSyncService -StorageSyncServiceName $storageSyncName
+    $registeredServer = Register-AzureRmStorageSyncServer -StorageSyncServiceName $storageSyncName
     return $registeredServer
 }
 
@@ -117,7 +122,7 @@ function New-ServerEndpoint {
 # Login to Azure
 $username = # Add Azure username "user@domain.com"
 $password = # Add password
-$acctInfo = Login-Azure $username $password
+$credential, $acctInfo = Login-Azure $username $password
 
 # Set variables
 $resourceGroupName = Get-AzureRmResourceGroup | Select-Object -ExpandProperty ResourceGroupName
@@ -131,7 +136,8 @@ $serverEndpointPath = "D:\dev"
 $cloudTieringDesired = $true
 $volumeFreeSpacePercentage = 50
 
-New-StorageSyncService $acctInfo $storageSyncName $resourceGroupName
+Login-StorageSync $credential $acctInfo $resourceGroupName
+New-StorageSyncService $storageSyncName
 $registeredServer = Register-StorageSyncServer $storageSyncName
 New-SyncGroup $storageSyncName $syncGroupName $storageAccountName $fileShareName
 New-ServerEndpoint $storageSyncName `
