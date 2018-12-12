@@ -115,8 +115,8 @@ function New-ServerEndpoint {
 
 
 # Login to Azure
-$username = "student-lab-01@labscloudacademy.onmicrosoft.com"
-$password = "1labAccount"
+$username = # Add Azure username "user@domain.com"
+$password = # Add password
 $acctInfo = Login-Azure $username $password
 
 # Set variables
