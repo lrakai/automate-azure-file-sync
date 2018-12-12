@@ -73,7 +73,7 @@ function New-SyncGroup {
     New-AzureRmStorageSyncGroup -SyncGroupName $syncGroupName -StorageSyncService $storageSyncName
 }
 
-function Set-CloudEndpoint {
+function New-CloudEndpoint {
     param (
         [string]$storageSyncName,
         [string]$syncGroupName,
@@ -150,7 +150,7 @@ Login-StorageSync $credential $acctInfo $resourceGroupName
 New-StorageSyncService $storageSyncName
 $registeredServer = Register-StorageSyncServer $storageSyncName
 New-SyncGroup $storageSyncName $syncGroupName
-Set-CloudEndpoint $storageSyncName $syncGroupName $resourceGroupName $storageAccountName $fileShareName
+New-CloudEndpoint $storageSyncName $syncGroupName $resourceGroupName $storageAccountName $fileShareName
 New-ServerEndpoint $storageSyncName `
     $syncGroupName `
     $registeredServer `
