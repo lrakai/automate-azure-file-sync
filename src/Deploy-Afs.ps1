@@ -84,7 +84,7 @@ function Set-CloudEndpoint {
     # Get the storage account with desired name
     $storageAccount = Get-AzureRmStorageAccount -ResourceGroupName $resourceGroupName -Name $storageAccountName
     
-    # Create the sync group with a cloud endpoint (file share)
+    # Set the cloud endpoint (file share) of the sync group
     New-AzureRmStorageSyncCloudEndpoint `
         -StorageSyncServiceName $storageSyncName `
         -SyncGroupName $syncGroupName `
