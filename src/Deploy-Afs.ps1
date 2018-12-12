@@ -67,6 +67,15 @@ function Register-StorageSyncServer {
 function New-SyncGroup {
     param (
         [string]$storageSyncName,
+        [string]$syncGroupName
+    )
+    # Create new Sync group
+    New-AzureRmStorageSyncGroup -SyncGroupName $syncGroupName -StorageSyncService $storageSyncName
+}
+
+function Set-CloudEndpoint {
+    param (
+        [string]$storageSyncName,
         [string]$syncGroupName,
         [string]$resourceGroupName,
         [string]$storageAccountName,
@@ -95,9 +104,9 @@ function New-ServerEndpoint {
     # Prepare a settings hashtable for splatting
     $settings = @{
         StorageSyncServiceName = $storageSyncName
-        SyncGroupName = $syncGroupName 
-        ServerId = $registeredServer.Id
-        ServerLocalPath = $serverEndpointPath 
+        SyncGroupName          = $syncGroupName 
+        ServerId               = $registeredServer.Id
+        ServerLocalPath        = $serverEndpointPath 
     }
 
     # Add additional settings if cloud tiering is desired
@@ -111,7 +120,7 @@ function New-ServerEndpoint {
 
         # Add cloud tiering settings
         $settings += @{
-            CloudTiering = $true
+            CloudTiering           = $true
             VolumeFreeSpacePercent = $volumeFreeSpacePercentage
         }
     }
@@ -140,10 +149,11 @@ $volumeFreeSpacePercentage = 50
 Login-StorageSync $credential $acctInfo $resourceGroupName
 New-StorageSyncService $storageSyncName
 $registeredServer = Register-StorageSyncServer $storageSyncName
-New-SyncGroup $storageSyncName $syncGroupName $resourceGroupName $storageAccountName $fileShareName
+New-SyncGroup $storageSyncName $syncGroupName
+Set-CloudEndpoint $storageSyncName $syncGroupName $resourceGroupName $storageAccountName $fileShareName
 New-ServerEndpoint $storageSyncName `
-                   $syncGroupName `
-                   $registeredServer `
-                   $serverEndpointPath `
-                   $cloudTieringDesired `
-                   $volumeFreeSpacePercentage
+    $syncGroupName `
+    $registeredServer `
+    $serverEndpointPath `
+    $cloudTieringDesired `
+    $volumeFreeSpacePercentage
