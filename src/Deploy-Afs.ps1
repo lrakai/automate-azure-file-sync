@@ -68,11 +68,12 @@ function New-SyncGroup {
     param (
         [string]$storageSyncName,
         [string]$syncGroupName,
+        [string]$resourceGroupName,
         [string]$storageAccountName,
         [string]$fileShareName
     )
     # Get the storage account with desired name
-    $storageAccount = Get-AzureRmStorageAccount -ResourceGroupName $resourceGroup -Name $storageAccountName
+    $storageAccount = Get-AzureRmStorageAccount -ResourceGroupName $resourceGroupName -Name $storageAccountName
     
     # Create the sync group with a cloud endpoint (file share)
     New-AzureRmStorageSyncCloudEndpoint `
@@ -139,7 +140,7 @@ $volumeFreeSpacePercentage = 50
 Login-StorageSync $credential $acctInfo $resourceGroupName
 New-StorageSyncService $storageSyncName
 $registeredServer = Register-StorageSyncServer $storageSyncName
-New-SyncGroup $storageSyncName $syncGroupName $storageAccountName $fileShareName
+New-SyncGroup $storageSyncName $syncGroupName $resourceGroupName $storageAccountName $fileShareName
 New-ServerEndpoint $storageSyncName `
                    $syncGroupName `
                    $registeredServer `
