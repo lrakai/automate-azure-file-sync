@@ -55,7 +55,8 @@ function Register-StorageSyncServer {
         [string]$storageSyncName
     )
     # Register the server executing the script as a server endpoint
-    New-AzureRmStorageSyncService -StorageSyncServiceName $storageSyncName
+    $registeredServer = New-AzureRmStorageSyncService -StorageSyncServiceName $storageSyncName
+    return $registeredServer
 }
 
 function New-SyncGroup {
@@ -78,14 +79,15 @@ function New-SyncGroup {
 
 function New-ServerEndpoint {
     param (
-
+        [string]$storageSyncName,
+        [string]$syncGroupName,
+        $registeredServer,
+        [string]$serverEndpointPath,
+        [bool]$cloudTieringDesired,
+        [int]$volumeFreeSpacePercentage
     )
-    $serverEndpointPath = "<your-server-endpoint-path>"
-    $cloudTieringDesired = $true
-    $volumeFreeSpacePercentage = <your-volume-free-space>
-
     # Prepare a settings hashtable for splatting
-    Settings = @{
+    $settings = @{
         StorageSyncServiceName = $storageSyncName
         SyncGroupName = $syncGroupName 
         ServerId = $registeredServer.Id
@@ -101,27 +103,35 @@ function New-ServerEndpoint {
             throw [System.Exception]::new("Cloud tiering cannot be enabled on the system volume")
         }
 
-        # Create server endpoint
-        `
-            -StorageSyncServiceName $storageSyncName `
-            -SyncGroupName $syncGroupName `
-            -ServerId $registeredServer.Id `
-            -ServerLocalPath $serverEndpointPath `
-            -CloudTiering $true `
-            -VolumeFreeSpacePercent $volumeFreeSpacePercentage
+        # Add cloud tiering settings
+        $settings += @{
+            CloudTiering = $true
+            VolumeFreeSpacePercent = $volumeFreeSpacePercentage
+        }
     }
-    New-AzureRmStorageSyncServerEndpoint @Settings
+    # Use splatting to set parameters
+    New-AzureRmStorageSyncServerEndpoint @settings
 }
 
 
 $resourceGroupName = Get-AzResourceGroup | Select-Object -ExpandProperty ResourceGroupName
 $storageAccountName = Get-AzStorageAccount -ResourceGroupName $resourceGroupName | `
-    Where-Object StorageAccountName -like calabsync*
+    Where-Object StorageAccountName -like calabsync* | `
+    Select-Object -ExpandProperty Name
 $fileShareName = "sync"
 $storageSyncName = "sync"
 $syncGroupName = "dev"
+$serverEndpointPath = "D:\dev"
+$cloudTieringDesired = $true
+$volumeFreeSpacePercentage = 50
 
 $acctInfo = Login-Azure
 New-StorageSyncService $acctInfo $storageSyncName $resourceGroupName
-Register-StorageSyncServer $storageSyncName
+$registeredServer = Register-StorageSyncServer $storageSyncName
 New-SyncGroup $storageSyncName $syncGroupName $storageAccountName $fileShareName
+New-ServerEndpoint $storageSyncName `
+                   $syncGroupName `
+                   $registeredServer `
+                   $serverEndpointPath `
+                   $cloudTieringDesired `
+                   $volumeFreeSpacePercentage
