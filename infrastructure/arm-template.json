@@ -133,7 +133,7 @@
         },
         "virtualMachineSize": {
             "type": "string",
-            "defaultValue": "Standard_B1ms"
+            "defaultValue": "Standard_B2ms"
         },
         "adminUsername": {
             "type": "string",
